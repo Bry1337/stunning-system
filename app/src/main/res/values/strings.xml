@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Noted</string>
+  <string name="click_to_start">Click to Start</string>
 </resources>
