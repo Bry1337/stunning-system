@@ -3,7 +3,7 @@ package io.github.bry1337.noted.activities.main
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import io.github.bry1337.noted.util.BACKGROUND
+import kotlinx.coroutines.*
 
 /**
  * Created by Edward Bryan Abergas on 08/11/2018.
@@ -19,45 +19,50 @@ import io.github.bry1337.noted.util.BACKGROUND
  */
 class MainViewModel : ViewModel() {
 
-	/**
-	 * Request a snackbar to display a string
-	 *
-	 * This variable is private because we don't want to expose the MutableLiveData.
-	 *
-	 * MutableLiveData allows anyone to set a value, and MainViewModel is the only class
-	 * that should be setting values.
-	 */
-	private val _snackBar = MutableLiveData<String>()
+    /**
+     * Request a snackbar to display a string
+     *
+     * This variable is private because we don't want to expose the MutableLiveData.
+     *
+     * MutableLiveData allows anyone to set a value, and MainViewModel is the only class
+     * that should be setting values.
+     */
+    private val _snackBar = MutableLiveData<String>()
 
-	/**
-	 * Request a snackbar to display a string
-	 *
-	 * Use Transformations.map to wrap each string sent to _snackbar in a non-null value.
-	 */
-	val snackbar: LiveData<String>
-		get() = _snackBar
+    /**
+     * Request a snackbar to display a string
+     *
+     * Use Transformations.map to wrap each string sent to _snackbar in a non-null value.
+     */
+    val snackbar: LiveData<String>
+        get() = _snackBar
 
-	// TODO: Add viewModelJob and uiScope here
+    // TODO: Add viewModelJob and uiScope here
+    private val viewModelJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-	// TODO: Add onCleared() here to cancel viewModelJob
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
 
-	/**
-	 * Wait one second to display snackbar.
-	 */
-	fun onMainViewClicked() {
-		// TODO: replace with coroutine implementation
-		BACKGROUND.submit {
-			Thread.sleep(1_000)
-			// use postValue since we're in a background thread
-			_snackBar.postValue("Hello, from threads")
-		}
-	}
+    /**
+     * Wait one second to display snackbar.
+     */
+    fun onMainViewClicked() {
+        // TODO: replace with coroutine implementation
+        uiScope.launch {
+            delay(1_000)
+            // use postValue since we're in a background thread
+            _snackBar.postValue("Hello, from threads")
+        }
+    }
 
-	/**
-	 * Called immediately after the UI shows the snackbar.
-	 */
-	fun onSnackbarShown() {
-		_snackBar.value = null
-	}
+    /**
+     * Called immediately after the UI shows the snackbar.
+     */
+    fun onSnackbarShown() {
+        _snackBar.value = null
+    }
 
 }
