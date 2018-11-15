@@ -49,10 +49,10 @@ class MainViewModel : ViewModel() {
     /**
      * Wait one second to display snackbar.
      */
-    fun onMainViewClicked() {
+    fun onMainViewClicked(showAfter: Long = 1_000) {
         // TODO: replace with coroutine implementation
         uiScope.launch {
-            delay(1_000)
+            delay(showAfter)
             // use postValue since we're in a background thread
             _snackBar.postValue("Hello, from threads")
         }

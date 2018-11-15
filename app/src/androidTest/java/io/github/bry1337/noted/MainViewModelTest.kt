@@ -40,7 +40,7 @@ class MainViewModelTest {
     fun whenMainViewModelClicked_showSnackBar() {
         runBlocking {
             subject.snackbar.captureValues {
-                subject.onMainViewClicked()
+                subject.onMainViewClicked(0)
                 assertSendsValues(2_000, "Hello, from threads")
             }
         }
